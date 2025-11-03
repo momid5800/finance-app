@@ -6,7 +6,8 @@ workflows:
     scripts:
       - name: Build Android APK
         script: |
+          cd finance-app
           flutter pub get
           flutter build apk --release
     artifacts:
-      - build/app/outputs/flutter-apk/*.apk
+      - finance-app/build/app/outputs/flutter-apk/*.apk
