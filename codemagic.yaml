@@ -4,11 +4,23 @@ workflows:
     environment:
       groups: []
     scripts:
-      - name: Build Android APK
+      - name: Find project root
         script: |
-          pwd
-          ls -la
-          ls -la */
+          # پیدا کردن پوشه اصلی پروژه
+          if [ -f "./pubspec.yaml" ]; then
+            echo "Project found in root"
+          else
+            # پیدا کردن پوشه‌ای که pubspec.yaml داره
+            PROJECT_DIR=$(find . -name "pubspec.yaml" -exec dirname {} \; | head -1)
+            if [ -n "$PROJECT_DIR" ]; then
+              cd "$PROJECT_DIR"
+              echo "Project found in: $PROJECT_DIR"
+            else
+              echo "ERROR: No Flutter project found"
+              exit 1
+            fi
+          fi
+          
           flutter pub get
           flutter build apk --release
     artifacts:
