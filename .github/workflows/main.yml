@@ -4,13 +4,43 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-      - run: |
-          flutter --version
-          flutter pub get
-          flutter build apk --release
-      - uses: actions/upload-artifact@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+          
+      - name: Show Flutter version
+        run: flutter --version
+        
+      - name: Check project structure
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Files:"
+          ls -la
+          echo "Looking for pubspec.yaml:"
+          find . -name "pubspec.yaml"
+          
+      - name: Create Flutter project if needed
+        run: |
+          if [ -f "pubspec.yaml" ]; then
+            echo "✅ pubspec.yaml found!"
+          else
+            echo "❌ No pubspec.yaml - creating project..."
+            flutter create . --org com.github
+          fi
+          
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Build APK
+        run: flutter build apk --release --verbose
+        
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: app-release
           path: build/app/outputs/flutter-apk/app-release.apk
